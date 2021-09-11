@@ -6,44 +6,26 @@
 using namespace std;
 int parseDisplaySize(string);
 
+void pullDataFromMaster(ofstream &myfile, unsigned short size, List<TV> &odata)
+{
+    myfile << size << " POLLICI" << endl;
+    for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
+    {
+        if (parseDisplaySize(app->getValue().getModel()) == size)
+            myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
+    }
+    myfile << endl;
+}
+
 void writeToFile(List<TV> &odata)
 {
     ofstream myfile;
     myfile.open("samsungOrdinato.txt");
-    myfile << "32 POLLICI"<<endl;
-    for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
-    {
-        if (parseDisplaySize(app->getValue().getModel()) == 32)
-            myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
-    }
-    myfile << endl;
-    myfile << "49 POLLICI"<<endl;
-    for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
-    {
-        if (parseDisplaySize(app->getValue().getModel()) == 49)
-            myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
-    }
-    myfile << endl;
-    myfile << "55 POLLICI"<<endl;
-    for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
-    {
-        if (parseDisplaySize(app->getValue().getModel()) == 55)
-            myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
-    }
-    myfile << endl;
-    myfile << "60 POLLICI"<<endl;
-    for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
-    {
-        if (parseDisplaySize(app->getValue().getModel()) == 60)
-            myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
-    }
-    myfile << endl;
-    myfile << "65 POLLICI"<<endl;
-    for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
-    {
-        if (parseDisplaySize(app->getValue().getModel()) == 65)
-            myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
-    }
+    pullDataFromMaster(myfile, 32, odata);
+    pullDataFromMaster(myfile, 49, odata);
+    pullDataFromMaster(myfile, 55, odata);
+    pullDataFromMaster(myfile, 60, odata);
+    pullDataFromMaster(myfile, 65, odata);
     myfile.close();
 }
 
@@ -80,7 +62,7 @@ int parseDisplaySize(string myWord)
 
 int main()
 {
-    List<TV> masterTVList; 
+    List<TV> masterTVList;
     loadFile("samsung.txt", masterTVList);
 
     writeToFile(masterTVList);
