@@ -46,7 +46,7 @@ void loadFile(string idata, List<TV> &list)
 int parseDisplaySize(string myWord)
 {
     char arr[14];
-    
+
     strcpy(arr, myWord.c_str());
     if ((int(arr[0]) <= 57 && int(arr[0]) >= 48))
     {
