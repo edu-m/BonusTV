@@ -6,26 +6,43 @@
 using namespace std;
 int parseDisplaySize(string);
 
-void pullDataFromMaster(ofstream &myfile, unsigned short size, List<TV> &odata)
+void pullDataFromMaster(ofstream &myfile, unsigned short *sizeArray, unsigned short n, List<TV> &odata)
 {
-    myfile << size << " POLLICI" << endl;
-    for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
+    bool found;
+    for (int i = 0; i < n; i++)
     {
-        if (parseDisplaySize(app->getValue().getModel()) == size)
-            myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
+        myfile << sizeArray[i] << " POLLICI" << endl;
+        found = false;
+        for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
+        {
+            if (parseDisplaySize(app->getValue().getModel()) == sizeArray[i])
+            {
+                myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
+                if (found == false)
+                    found = true;
+            }
+        }
+        if (!found)
+            myfile << "\t\t**NESSUN MODELLO TROVATO**" << endl;
+        myfile << endl;
     }
-    myfile << endl;
 }
 
-void writeToFile(List<TV> &odata)
+void writeToFile(string file, List<TV> &odata)
 {
     ofstream myfile;
-    myfile.open("samsungOrdinato.txt");
-    pullDataFromMaster(myfile, 32, odata);
-    pullDataFromMaster(myfile, 49, odata);
-    pullDataFromMaster(myfile, 55, odata);
-    pullDataFromMaster(myfile, 60, odata);
-    pullDataFromMaster(myfile, 65, odata);
+    myfile.open(file + "Ordinato.txt");
+    unsigned short n;
+    cout << "Quante dimensioni desideri cercare? " << endl;
+    cin >> n;
+    unsigned short sizeArray[n];
+    for (int i = 0; i < n; i++)
+    {
+        cout << "Inserisci dimensione: ";
+        cin >> sizeArray[i];
+    }
+    pullDataFromMaster(myfile, sizeArray, n, odata);
+    cout << "File di testo ordinato creato." << endl;
     myfile.close();
 }
 
@@ -64,7 +81,12 @@ int parseDisplaySize(string myWord)
 int main()
 {
     List<TV> masterTVList;
-    loadFile("samsung.txt", masterTVList);
+    string file;
 
-    writeToFile(masterTVList);
+    cout << "Inserisci nome file da ordinare: ";
+    cin >> file;
+
+    loadFile(file + ".txt", masterTVList);
+
+    writeToFile(file, masterTVList);
 }
