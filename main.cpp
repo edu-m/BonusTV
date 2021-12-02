@@ -32,16 +32,26 @@ void writeToFile(string file, List<TV> &odata)
 {
     ofstream myfile;
     myfile.open(file + "Ordinato.txt");
-    unsigned short n;
-    cout << "Quante dimensioni desideri cercare? " << endl;
-    cin >> n;
-    unsigned short sizeArray[n];
-    for (int i = 0; i < n; i++)
+
+    int i = 0;            //size count
+    unsigned short k[15]; //max value;
+    cout << "Inserisci dimensione (0 per fermarsi): ";
+    while (1)
     {
         cout << "Inserisci dimensione: ";
-        cin >> sizeArray[i];
+        cin >> k[i];
+        if (k[i] != 0)
+            i++;
+        else
+            break;
     }
-    pullDataFromMaster(myfile, sizeArray, n, odata);
+    if (i == 0)
+        exit(0);
+    unsigned short sizeArray[i];
+    for (int j = 0; j < i; j++)
+    {
+        sizeArray[j]=k[j];    }
+    pullDataFromMaster(myfile, sizeArray, i, odata);
     cout << "File di testo ordinato creato." << endl;
     myfile.close();
 }
@@ -83,7 +93,7 @@ int main()
     List<TV> masterTVList;
     string file;
 
-    cout << "Inserisci nome file da ordinare: ";
+    cout << "Inserisci nome file da ordinare senza includere l'estensione (.txt): ";
     cin >> file;
 
     loadFile(file + ".txt", masterTVList);
