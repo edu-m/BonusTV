@@ -6,16 +6,16 @@
 using namespace std;
 int parseDisplaySize(string);
 
-void pullDataFromMaster(ofstream &myfile, unsigned short *sizeArray, unsigned short n, List<TV> &odata)
+void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, List<TV> &odata)
 {
     bool found;
-    for (int i = 0; i < n; i++)
+    for (Node<int> *i = tvSizes->getHead(); i != NULL; i = i->getNext())
     {
-        myfile << sizeArray[i] << " POLLICI" << endl;
+        myfile << i->getValue() << " POLLICI" << endl;
         found = false;
         for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
         {
-            if (parseDisplaySize(app->getValue().getModel()) == sizeArray[i])
+            if (parseDisplaySize(app->getValue().getModel()) == i->getValue())
             {
                 myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
                 if (found == false)
@@ -31,27 +31,25 @@ void pullDataFromMaster(ofstream &myfile, unsigned short *sizeArray, unsigned sh
 void writeToFile(string file, List<TV> &odata)
 {
     ofstream myfile;
-    myfile.open(file + "Ordinato.txt");
+    myfile.open(file.erase(file.length() - 4, 4) + "Ordinato.txt");
 
-    int i = 0;            //size count
-    unsigned short k[15]; //max value;
-    cout << "Inserisci dimensione (0 per fermarsi): ";
+    unsigned short i;
+    List<int> tvSizes;
+
+    cout << "Inserisci dimensione (0 per fermarsi): " << endl;
     while (1)
     {
         cout << "Inserisci dimensione: ";
-        cin >> k[i];
-        if (k[i] != 0)
-            i++;
-        else
+        cin >> i;
+        if (i == 0)
             break;
+        if (!tvSizes.isNodePresent(i))
+            tvSizes.insert(i);
     }
-    if (i == 0)
+    if (tvSizes.getLength() == 0)
         exit(0);
-    unsigned short sizeArray[i];
-    for (int j = 0; j < i; j++)
-    {
-        sizeArray[j]=k[j];    }
-    pullDataFromMaster(myfile, sizeArray, i, odata);
+
+    pullDataFromMaster(myfile, &tvSizes, i, odata);
     cout << "File di testo ordinato creato." << endl;
     myfile.close();
 }
@@ -68,6 +66,7 @@ void loadFile(string idata, List<TV> &list)
         list.insert(temp);
     }
     ifs.close();
+    writeToFile(idata, list);
 }
 
 int parseDisplaySize(string myWord)
@@ -97,6 +96,4 @@ int main()
     cin >> file;
 
     loadFile(file + ".txt", masterTVList);
-
-    writeToFile(file, masterTVList);
 }
