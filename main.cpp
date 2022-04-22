@@ -3,10 +3,11 @@
 #include <cstring>
 #include <fstream>
 
+using tvlist = List<TV>;
 using namespace std;
 int parseDisplaySize(string);
 
-void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, List<TV> &odata)
+void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, tvlist &odata)
 {
     bool found;
     for (Node<int> *i = tvSizes->getHead(); i != NULL; i = i->getNext())
@@ -28,7 +29,7 @@ void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, 
     }
 }
 
-void writeToFile(string file, List<TV> &odata)
+void writeToFile(string file, tvlist &odata)
 {
     ofstream myfile;
     myfile.open(file.erase(file.length() - 4, 4) + "Ordinato.txt");
@@ -54,7 +55,7 @@ void writeToFile(string file, List<TV> &odata)
     myfile.close();
 }
 
-void loadFile(string idata, List<TV> &list)
+void loadFile(string idata, tvlist &list)
 {
     ifstream ifs(idata, ifstream::in);
     Node<TV> *app;
@@ -87,13 +88,16 @@ int parseDisplaySize(string myWord)
     return 0;
 }
 
+void init(tvlist &masterTVList, string file)
+{
+    loadFile(file + ".txt", masterTVList);
+}
+
 int main()
 {
-    List<TV> masterTVList;
+    tvlist masterTVList;
     string file;
-
     cout << "Inserisci nome file da ordinare senza includere l'estensione (.txt): ";
     cin >> file;
-
-    loadFile(file + ".txt", masterTVList);
+    init(masterTVList,file);
 }
