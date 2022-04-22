@@ -2,11 +2,13 @@
 #include "tvlist.h"
 #include <cstring>
 #include <fstream>
+#define INIT_STRING "Inserisci nome file da ordinare senza includere l'estensione (.txt): "
 
 using namespace std;
+using tvlist = List<TV>;
 int parseDisplaySize(string);
 
-void pullDataFromMaster(ofstream &myfile, unsigned short *sizeArray, unsigned short n, List<TV> &odata)
+void pullDataFromMaster(ofstream &myfile, unsigned short *sizeArray, unsigned short n, tvlist &odata)
 {
     bool found;
     for (int i = 0; i < n; i++)
@@ -28,13 +30,13 @@ void pullDataFromMaster(ofstream &myfile, unsigned short *sizeArray, unsigned sh
     }
 }
 
-void writeToFile(string file, List<TV> &odata)
+void writeToFile(string file, tvlist &odata)
 {
     ofstream myfile;
     myfile.open(file + "Ordinato.txt");
 
-    int i = 0;            //size count
-    unsigned short k[15]; //max value;
+    int i = 0;            // size count
+    unsigned short k[15]; // max value;
     cout << "Inserisci dimensione (0 per fermarsi): ";
     while (1)
     {
@@ -50,13 +52,14 @@ void writeToFile(string file, List<TV> &odata)
     unsigned short sizeArray[i];
     for (int j = 0; j < i; j++)
     {
-        sizeArray[j]=k[j];    }
+        sizeArray[j] = k[j];
+    }
     pullDataFromMaster(myfile, sizeArray, i, odata);
     cout << "File di testo ordinato creato." << endl;
     myfile.close();
 }
 
-void loadFile(string idata, List<TV> &list)
+void loadFile(string idata, tvlist &list)
 {
     ifstream ifs(idata, ifstream::in);
     Node<TV> *app;
@@ -88,15 +91,18 @@ int parseDisplaySize(string myWord)
     return 0;
 }
 
+void init(tvlist &masterTVList, string file)
+{
+    loadFile(file + ".txt", masterTVList);
+    writeToFile(file, masterTVList);
+}
+
 int main()
 {
-    List<TV> masterTVList;
+    tvlist masterTVList;
     string file;
 
-    cout << "Inserisci nome file da ordinare senza includere l'estensione (.txt): ";
+    cout << INIT_STRING;
     cin >> file;
-
-    loadFile(file + ".txt", masterTVList);
-
-    writeToFile(file, masterTVList);
+    init(masterTVList, file);
 }

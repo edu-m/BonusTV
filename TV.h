@@ -177,7 +177,7 @@ public:
     }
     bool isTrue(std::string k)
     {
-        if (k == "n/a" || k == "NO")
+        if (k == "n/a" || k == "NO" || k == "n.a.")
             return 0;
         return 1;
     }
