@@ -2,6 +2,7 @@
 #include "tvlist.h"
 #include <cstring>
 #include <fstream>
+#include <sys/stat.h>
 
 using tvlist = List<TV>;
 using namespace std;
@@ -93,11 +94,25 @@ void init(tvlist &masterTVList, string file)
     loadFile(file + ".txt", masterTVList);
 }
 
+inline bool fileExists(const string &name)
+{
+    struct stat buffer;
+    return (stat(name.c_str(), &buffer) == 0);
+}
+
+#define EXT ".txt"
+
 int main()
 {
     tvlist masterTVList;
     string file;
-    cout << "Inserisci nome file da ordinare senza includere l'estensione (.txt): ";
-    cin >> file;
-    init(masterTVList,file);
+    do
+    {
+        cout << "Inserisci nome file da ordinare senza includere l'estensione (.txt): ";
+        cin >> file;
+        if (!fileExists(file + EXT))
+            cerr << "File non trovato.\n";
+    } while (!fileExists(file + EXT));
+
+    init(masterTVList, file);
 }
