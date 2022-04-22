@@ -89,11 +89,6 @@ int parseDisplaySize(string myWord)
     return 0;
 }
 
-void init(tvlist &masterTVList, string file)
-{
-    loadFile(file + ".txt", masterTVList);
-}
-
 inline bool fileExists(const string &name)
 {
     struct stat buffer;
@@ -114,5 +109,5 @@ int main()
             cerr << "File non trovato.\n";
     } while (!fileExists(file + EXT));
 
-    init(masterTVList, file);
+    loadFile(file + ".txt", masterTVList);
 }
