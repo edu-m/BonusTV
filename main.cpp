@@ -3,6 +3,7 @@
 #include <cstring>
 #include <fstream>
 #include <sys/stat.h>
+#define EXT ".txt"
 
 using tvlist = List<TV>;
 using namespace std;
@@ -19,7 +20,7 @@ void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, 
         {
             if (parseDisplaySize(app->getValue().getModel()) == i->getValue())
             {
-                myfile << "TV di Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
+                myfile << "Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
                 if (found == false)
                     found = true;
             }
@@ -28,6 +29,12 @@ void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, 
             myfile << "\t\t**NESSUN MODELLO TROVATO**" << endl;
         myfile << endl;
     }
+}
+
+void exitErrNoData()
+{
+    cerr << "Nessun dato è stato trovato, chiusura del programma.\n";
+    exit(EXIT_FAILURE);
 }
 
 void writeToFile(string file, tvlist &odata)
@@ -49,7 +56,7 @@ void writeToFile(string file, tvlist &odata)
             tvSizes.insert(i);
     }
     if (tvSizes.getLength() == 0)
-        exit(0);
+        exitErrNoData();
 
     pullDataFromMaster(myfile, &tvSizes, i, odata);
     cout << "File di testo ordinato creato." << endl;
@@ -71,19 +78,19 @@ void loadFile(string idata, tvlist &list)
     writeToFile(idata, list);
 }
 
-int parseDisplaySize(string myWord)
+int parseDisplaySize(string str)
 {
     char arr[14];
 
-    strcpy(arr, myWord.c_str());
+    strcpy(arr, str.c_str());
     if ((int(arr[0]) <= 57 && int(arr[0]) >= 48))
     {
-        string ds = myWord.substr(0, 2);
+        string ds = str.substr(0, 2);
         return stoi(ds);
     }
     else if ((int(arr[2]) <= 57 && int(arr[2]) >= 48))
     {
-        string ds = myWord.substr(2, 2);
+        string ds = str.substr(2, 2);
         return stoi(ds);
     }
     return 0;
@@ -95,7 +102,13 @@ inline bool fileExists(const string &name)
     return (stat(name.c_str(), &buffer) == 0);
 }
 
-#define EXT ".txt"
+string sanitizeFileName(string str)
+{
+    if (str.find(".txt") != string::npos)
+        return str;
+    else
+        return str+".txt";
+}
 
 int main()
 {
@@ -103,11 +116,14 @@ int main()
     string file;
     do
     {
-        cout << "Inserisci nome file da ordinare senza includere l'estensione (.txt): ";
+        cout << "Inserisci nome file da ordinare: ";
         cin >> file;
-        if (!fileExists(file + EXT))
+        if (!fileExists(sanitizeFileName(file)))
+        {
+            cout << sanitizeFileName(file) << endl;
             cerr << "File non trovato.\n";
-    } while (!fileExists(file + EXT));
+        }
+    } while (!fileExists(sanitizeFileName(file)));
 
-    loadFile(file + ".txt", masterTVList);
+    loadFile(sanitizeFileName(file), masterTVList);
 }
