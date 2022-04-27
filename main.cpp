@@ -3,6 +3,7 @@
 #include <cstring>
 #include <fstream>
 #include <algorithm>
+#include "banned.h"
 #include <sys/stat.h>
 #define EXT ".txt"
 
@@ -24,14 +25,15 @@ void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, 
     bool found;
     for (Node<int> *i = tvSizes->getHead(); i != NULL; i = i->getNext())
     {
-        myfile << i->getValue() << " POLLICI\n";
+        myfile << "\t\t\t\t\t" << i->getValue() << " POLLICI\n";
         found = false;
         for (Node<TV> *app = odata.getHead(); app != NULL; app = app->getNext())
             if (parseDisplaySize(app->getValue().getModel()) == i->getValue())
                 insertEntry(app, myfile, &found);
-        myfile << "\n";
         if (!found)
-            myfile << "\t\t**NESSUN MODELLO TROVATO**\n\n";
+            myfile << "\t\t\t**NESSUN MODELLO TROVATO**\n\n";
+        else
+            myfile << "\n";
     }
 }
 
@@ -44,7 +46,7 @@ void exitErrNoData()
 void writeToFile(string file, tvlist &odata)
 {
     ofstream myfile;
-    myfile.open(file.erase(file.length() - 4, 4) + "_ordinato.txt");
+    myfile.open(file.substr(0, file.length() - 4) + "_ordinato.txt");
     unsigned short i;
     List<int> tvSizes;
 
@@ -61,6 +63,7 @@ void writeToFile(string file, tvlist &odata)
     pullDataFromMaster(myfile, &tvSizes, i, odata);
     cout << "File di testo ordinato creato." << endl;
     myfile.close();
+    exit(EXIT_SUCCESS);
 }
 
 void loadFile(string idata, tvlist &list)
@@ -83,7 +86,7 @@ int parseDisplaySize(string str)
         return stoi(str.substr(0, 2));
     if (uint8_t(str[2]) <= 57 && uint8_t(str[2]) >= 48)
         return stoi(str.substr(2, 2));
-    return -1; // errsize, might implement proper check later?
+    return -1; // errsize
 }
 
 inline bool fileExists(const string &name)
