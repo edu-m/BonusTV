@@ -21,8 +21,8 @@ void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, 
             if (parseDisplaySize(app->getValue().getModel()) == i->getValue())
             {
                 myfile << "Marca: " << app->getValue().getBrand() << ", EAN: " << app->getValue().getEAN() << ", Modello: " << app->getValue().getModel() << endl;
-                if (found == false)
-                    found = true;
+                if (!found)
+                    found = !found;
             }
         }
         if (!found)
@@ -33,7 +33,7 @@ void pullDataFromMaster(ofstream &myfile, List<int> *tvSizes, unsigned short n, 
 
 void exitErrNoData()
 {
-    cerr << "Nessun dato è stato trovato, chiusura del programma.\n";
+    cerr << "Nessun dato e' stato inserito, chiusura del programma.\n";
     exit(EXIT_FAILURE);
 }
 
@@ -66,7 +66,6 @@ void writeToFile(string file, tvlist &odata)
 void loadFile(string idata, tvlist &list)
 {
     ifstream ifs(idata, ifstream::in);
-    Node<TV> *app;
     while (ifs.good())
     {
         TV s;
@@ -80,20 +79,14 @@ void loadFile(string idata, tvlist &list)
 
 int parseDisplaySize(string str)
 {
-    char arr[14];
+    char arr[14]; // max length of SN is 14
 
     strcpy(arr, str.c_str());
-    if ((int(arr[0]) <= 57 && int(arr[0]) >= 48))
-    {
-        string ds = str.substr(0, 2);
-        return stoi(ds);
-    }
-    else if ((int(arr[2]) <= 57 && int(arr[2]) >= 48))
-    {
-        string ds = str.substr(2, 2);
-        return stoi(ds);
-    }
-    return 0;
+    if ((uint_fast16_t(arr[0]) <= 57 && uint_fast16_t(arr[0]) >= 48))
+        return stoi(str.substr(0, 2));
+    if ((uint_fast16_t(arr[2]) <= 57 && uint_fast16_t(arr[2]) >= 48))
+        return stoi(str.substr(2, 2));
+    return -1; // errsize
 }
 
 inline bool fileExists(const string &name)
@@ -102,12 +95,11 @@ inline bool fileExists(const string &name)
     return (stat(name.c_str(), &buffer) == 0);
 }
 
-string sanitizeFileName(string str)
+string sanitizeFileName(string str) // filename must contain ".txt"
 {
     if (str.find(".txt") != string::npos)
         return str;
-    else
-        return str+".txt";
+    return str + ".txt";
 }
 
 int main()
@@ -119,11 +111,7 @@ int main()
         cout << "Inserisci nome file da ordinare: ";
         cin >> file;
         if (!fileExists(sanitizeFileName(file)))
-        {
-            cout << sanitizeFileName(file) << endl;
-            cerr << "File non trovato.\n";
-        }
+        cerr << "File non trovato: \'" << sanitizeFileName(file) << "\'\n";
     } while (!fileExists(sanitizeFileName(file)));
-
     loadFile(sanitizeFileName(file), masterTVList);
 }
