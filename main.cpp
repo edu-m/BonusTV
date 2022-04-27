@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sys/stat.h>
+#include "banned.h"
 #define EXT ".txt"
 
 using tvlist = List<TV>;
@@ -44,8 +45,7 @@ void exitErrNoData()
 void writeToFile(string file, tvlist &odata)
 {
     ofstream myfile;
-    myfile.open(file.erase(file.length() - 4, 4) + "Ordinato.txt");
-
+    myfile.open(file.erase(file.length() - 4, 4) + "_ordinato.txt");
     unsigned short i;
     List<int> tvSizes;
 
@@ -59,7 +59,6 @@ void writeToFile(string file, tvlist &odata)
     }
     if (tvSizes.getLength() == 0)
         exitErrNoData();
-
     pullDataFromMaster(myfile, &tvSizes, i, odata);
     cout << "File di testo ordinato creato." << endl;
     myfile.close();
@@ -81,12 +80,9 @@ void loadFile(string idata, tvlist &list)
 
 int parseDisplaySize(string str)
 {
-    char arr[14]; // max length of SN is 14
-
-    strcpy(arr, str.c_str());
-    if ((uint_fast8_t(arr[0]) <= 57 && uint_fast8_t(arr[0]) >= 48))
+    if (uint8_t(str[0]) <= 57 && uint8_t(str[0]) >= 48)
         return stoi(str.substr(0, 2));
-    if ((uint_fast8_t(arr[2]) <= 57 && uint_fast8_t(arr[2]) >= 48))
+    if (uint8_t(str[2]) <= 57 && uint8_t(str[2]) >= 48)
         return stoi(str.substr(2, 2));
     return -1; // errsize
 }
