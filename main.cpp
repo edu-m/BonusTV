@@ -83,7 +83,7 @@ int parseDisplaySize(string str)
         return stoi(str.substr(0, 2));
     if (uint8_t(str[2]) <= 57 && uint8_t(str[2]) >= 48)
         return stoi(str.substr(2, 2));
-    return -1; // errsize
+    return -1; // errsize, might implement proper check later?
 }
 
 inline bool fileExists(const string &name)
