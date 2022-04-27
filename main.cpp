@@ -3,7 +3,6 @@
 #include <cstring>
 #include <fstream>
 #include <algorithm>
-#include "banned.h"
 #include <sys/stat.h>
 #define EXT ".txt"
 
