@@ -4,7 +4,6 @@
 #include <fstream>
 #include <algorithm>
 #include <sys/stat.h>
-#include "banned.h"
 #define EXT ".txt"
 
 using tvlist = List<TV>;
